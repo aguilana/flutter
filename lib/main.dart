@@ -25,11 +25,35 @@ class MyApp extends StatelessWidget {
   }
 } // MyApp
 
+/*********************************
+ ******* MY APP STATE *******
+ *********************************
+  * This is the state of the app
+  * It is a ChangeNotifier
+  * It has a WordPair called current
+  * It has a list of WordPair called favorites
+  * It has a method called getNext() that changes the current WordPair
+  * It has a method called toggleFavorite() that adds or removes the current WordPair from the favorites list
+ * */
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
 
+  // this getNext() method is called from the ElevatedButton onPressed
   void getNext() {
     current = WordPair.random();
+    notifyListeners();
+  }
+
+  // ↓ favorites is a list of WordPair
+  var favorites = <WordPair>[];
+
+  // this method is called from the IconButton onPressed
+  void toggleFavorite() {
+    if (favorites.contains(current)) {
+      favorites.remove(current);
+    } else {
+      favorites.add(current);
+    }
     notifyListeners();
   }
 } // MyAppState
