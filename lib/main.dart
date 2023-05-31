@@ -45,7 +45,7 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('Do you want this?'),
+            // device independent pixels. 20px will be same independent of device used!
             SizedBox(height: 20.0),
             BigCard(pair: pair),
             SizedBox(height: 20.0),
@@ -80,7 +80,7 @@ class BigCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final style = theme.textTheme.displayMedium!.copyWith(
+    final textStyle = theme.textTheme.displayMedium!.copyWith(
       color: theme.colorScheme.onPrimary,
     );
 
@@ -89,8 +89,8 @@ class BigCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Text(
-          pair.asLowerCase,
-          style: style,
+          pair.asPascalCase,
+          style: textStyle,
           semanticsLabel: "${pair.first} ${pair.second}",
         ),
       ),
