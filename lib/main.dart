@@ -44,10 +44,10 @@ class MyAppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ↓ favorites is a list of WordPair
+  // ↓ favorites is a list of WordPair, which is a type from the english_words package
   var favorites = <WordPair>[];
 
-  // this method is called from the IconButton onPressed
+  // this method is called from the IconButton onPressed which toggles the favorite
   void toggleFavorite() {
     if (favorites.contains(current)) {
       favorites.remove(current);
@@ -61,32 +61,86 @@ class MyAppState extends ChangeNotifier {
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          SafeArea(
+            child: NavigationRail(
+              extended: false,
+              destinations: [
+                NavigationRailDestination(
+                  icon: Icon(Icons.home),
+                  label: Text('Home'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.favorite),
+                  label: Text('Favorites'),
+                ),
+              ],
+              selectedIndex: 0,
+              onDestinationSelected: (value) {
+                print('selected: $value');
+              },
+            ),
+          ),
+          Expanded(
+            child: Container(
+              color: Theme.of(context).colorScheme.primaryContainer,
+              child: GeneratorPage(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class GeneratorPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
     var pair = appState.current;
 
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // device independent pixels. 20px will be same independent of device used!
-            SizedBox(height: 20.0),
-            BigCard(pair: pair),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                // I want to print the appState.getNext() here
-                appState.getNext();
-              },
-              child: Text('Next'),
-              // style: ElevatedButton.styleFrom(
-              //   backgroundColor: Colors.deepOrange,
-              //   foregroundColor: Colors.white,
-              //   disabledBackgroundColor: Colors.grey,
-              // ),
-            ),
-          ],
-        ),
+    IconData icon;
+    if (appState.favorites.contains(pair)) {
+      icon = Icons.favorite;
+    } else {
+      icon = Icons.favorite_border;
+    }
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // device independent pixels. 20px will be same independent of device used!
+          SizedBox(height: 20.0),
+          BigCard(pair: pair),
+          SizedBox(height: 20.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                  onPressed: () {
+                    appState.toggleFavorite();
+                  },
+                  icon: Icon(icon),
+                  label: Text('Like')),
+              SizedBox(width: 10.0),
+              ElevatedButton(
+                onPressed: () {
+                  // I want to print the appState.getNext() here
+                  appState.getNext();
+                },
+                child: Text('Next'),
+                // style: ElevatedButton.styleFrom(
+                //   backgroundColor: Colors.deepOrange,
+                //   foregroundColor: Colors.white,
+                //   disabledBackgroundColor: Colors.grey,
+                // ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -113,7 +167,7 @@ class BigCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Text(
-          pair.asPascalCase,
+          pair.asLowerCase,
           style: textStyle,
           semanticsLabel: "${pair.first} ${pair.second}",
         ),
